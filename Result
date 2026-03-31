@@ -22,32 +22,25 @@
             String hoten = request.getParameter("hoten");
 
             if (sbd != null && hoten != null && !sbd.trim().isEmpty() && !hoten.trim().isEmpty()) {
-                Connection conn = null;
-                Statement stmt = null;
-                ResultSet rs = null;
-                try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/qlsv?useUnicode=true&characterEncoding=UTF-8", "root", "");
-                    
-                    stmt = conn.createStatement();
-                    
-                    String sql = "SELECT t.*, n.Tennganh FROM thisinh t JOIN nganh n ON t.Manganh = n.Manganh WHERE t.SoBD = '" + sbd.trim() + "' AND t.Hoten = '" + hoten.trim() + "'";
-                    
-                    rs = stmt.executeQuery(sql);
+                
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/qlsv?useUnicode=true&characterEncoding=UTF-8", "root", "");
+                
+                Statement stmt = conn.createStatement();
+                String sql = "SELECT t.*, n.Tennganh FROM thisinh t JOIN nganh n ON t.Manganh = n.Manganh WHERE t.SoBD = '" + sbd.trim() + "' AND t.Hoten = '" + hoten.trim() + "'";
+                
+                ResultSet rs = stmt.executeQuery(sql);
 
-                    if (rs.next()) {
-                        String gioiTinh = rs.getString("Gioitinh");
-                        String ngaySinh = rs.getString("Ngaysinh");
-                        String noiSinh = rs.getString("Noisinh");
-                        String tenNganh = rs.getString("Tennganh");
-                        int monCB = rs.getInt("MonCB");
-                        int monCS = rs.getInt("MonCS");
-                        int ngoaiNgu = rs.getInt("Ngoaingu");
-                        
-                        String ketQua = "Không trúng tuyển";
-                        if (monCB >= 5 && monCS >= 5 && ngoaiNgu >= 50) {
-                            ketQua = "Trúng tuyển";
-                        }
+                if (rs.next()) {
+                    String gioiTinh = rs.getString("Gioitinh");
+                    String ngaySinh = rs.getString("Ngaysinh");
+                    String noiSinh = rs.getString("Noisinh");
+                    String tenNganh = rs.getString("Tennganh");
+                    int monCB = rs.getInt("MonCB");
+                    int monCS = rs.getInt("MonCS");
+                    int ngoaiNgu = rs.getInt("Ngoaingu");
+                    
+                    String ketQua = (monCB >= 5 && monCS >= 5 && ngoaiNgu >= 50) ? "Trúng tuyển" : "Không trúng tuyển";
         %>
         <table>
             <tr><td class="label">Số báo danh:</td><td><%= sbd %></td></tr>
@@ -62,16 +55,15 @@
             <tr><td class="label">Kết quả:</td><td><b><%= ketQua %></b></td></tr>
         </table>
         <%
-                    } else {
-                        out.println("<p style='text-align:center;'>Không tìm thấy thông tin thí sinh hợp lệ.</p>");
-                    }
-                } catch (Exception e) {
-                    out.println("<p style='text-align:center;'>Lỗi hệ thống: " + e.getMessage() + "</p>");
-                } finally {
-                    if (rs != null) try { rs.close(); } catch(SQLException e) {}
-                    if (stmt != null) try { stmt.close(); } catch(SQLException e) {}
-                    if (conn != null) try { conn.close(); } catch(SQLException e) {}
+                } else {
+                    out.println("<p style='text-align:center;'>Không tìm thấy thông tin thí sinh hợp lệ.</p>");
                 }
+                
+                // Đóng kết nối thủ công (không có finally)
+                rs.close();
+                stmt.close();
+                conn.close();
+
             } else {
                 out.println("<p style='text-align:center;'>Dữ liệu không hợp lệ.</p>");
             }
@@ -79,4 +71,5 @@
     </div>
 </body>
 </html>
+
 
