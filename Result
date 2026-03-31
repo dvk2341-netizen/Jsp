@@ -26,13 +26,11 @@
                 Statement stmt = null;
                 ResultSet rs = null;
                 try {
-                    // Duyệt driver trực tiếp thay cho Class.forName
-                    DriverManager.registerDriver(new com.mysql.jdbc.Driver()); 
+                    Class.forName("com.mysql.jdbc.Driver");
                     conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/qlsv?useUnicode=true&characterEncoding=UTF-8", "root", "");
                     
                     stmt = conn.createStatement();
                     
-                    // Nối chuỗi trực tiếp vào câu lệnh SQL
                     String sql = "SELECT t.*, n.Tennganh FROM thisinh t JOIN nganh n ON t.Manganh = n.Manganh WHERE t.SoBD = '" + sbd.trim() + "' AND t.Hoten = '" + hoten.trim() + "'";
                     
                     rs = stmt.executeQuery(sql);
@@ -68,14 +66,14 @@
                         out.println("<p style='text-align:center;'>Không tìm thấy thông tin thí sinh hợp lệ.</p>");
                     }
                 } catch (Exception e) {
-                    out.println("<p style='text-align:center;'>Lỗi kết nối cơ sở dữ liệu: " + e.getMessage() + "</p>");
+                    out.println("<p style='text-align:center;'>Lỗi hệ thống: " + e.getMessage() + "</p>");
                 } finally {
                     if (rs != null) try { rs.close(); } catch(SQLException e) {}
                     if (stmt != null) try { stmt.close(); } catch(SQLException e) {}
                     if (conn != null) try { conn.close(); } catch(SQLException e) {}
                 }
             } else {
-                out.println("<p style='text-align:center;'>Dữ liệu không hợp lệ. Vui lòng quay lại và nhập đầy đủ thông tin.</p>");
+                out.println("<p style='text-align:center;'>Dữ liệu không hợp lệ.</p>");
             }
         %>
     </div>
